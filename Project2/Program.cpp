@@ -45,13 +45,13 @@ void Program::runProgram(char *c)
 				
 				if (line2.find(",") != std::string::npos)	// If there is a (,) sign then it ahs multiple antecedents
 					while (std::getline(ss2, line3, ','))	// Get strings between the (,) signs
-						rule->setPreReq(line3.substr(0, line3.find("(")));	// add as a Antecedent for the rule
+						rule->setPreReq(line3);	// add as a Antecedent for the rule
 
 				else  if (count == 0 && line2.find(",") == std::string::npos)	// If there is not (,) sign then it is a single rule
-					rule->setPreReq(line2.substr(0, line2.find("(")));	// Add a single antecedent for the rule
+					rule->setPreReq(line2);	// Add a single antecedent for the rule
 
 				if (count != 0)
-					rule->setResult(line2.substr(0, line2.find("("))); // set rule result for the rule
+					rule->setResult(line2); // set rule result for the rule
 
 				count++; // increment counter to make sure we set the result as a result and not some antecedent
 			}
@@ -59,17 +59,13 @@ void Program::runProgram(char *c)
 			
 		}
 		else {										// If not then it is a fact
-			unsigned int first = line.find("(");	// find the "(" sign
-			unsigned int last = line.find(")");		// find the ")" sign
 			for each (Fact *fact in _facts) {		// Go through our list of facts
-				if (fact->getFactID().compare(line.substr(first + 1, last - first - 1)) == 0) { // If they both have the same name then 
-					fact->addProperty(line.substr(0, first));	// Just add a property			// there is no need for multiple objects of the same name
+				if (fact->getFactID().compare(line) == 0) { // If they both have the same name then 
 					contained = true;							// Flag that we already have a fact with the same name
 				}
 			}
 			if (!contained) {									// If we have a fact with the same name skip
-				Fact *newFact = new Fact(line.substr(first + 1, last - first - 1));	// Make new fact with name between the "("")"
-				newFact->addProperty(line.substr(0, first));	// Add the property
+				Fact *newFact = new Fact(line);	// Make new fact with name
 				_facts.emplace_back(newFact);					// put in fact vector
 				std::cout << "Fact: ";
 				std::cout << newFact->getFactID();
@@ -83,7 +79,7 @@ void Program::runProgram(char *c)
 
 	int i = 0;
 	for each (Fact* fact in _evaluatedFacts) { // Print out new evaluated facts
-		std::cout << "Evaluated Fact #" << i++ << ": " << fact->_newProperty << "(" << fact->getFactID() << ")\n";
+		std::cout << "Evaluated Fact #" << i++ << ": " << fact->getFactID() << "\n";
 	}
 	std::cin >> fileName;	// Enter anything to complete program
 							// This is just to see the results
@@ -93,28 +89,26 @@ void Program::runProgram(char *c)
 
 /*
 * Checks each fact against the rules
-* Name should probably be checkAgainsRules
-* ehh
 */
 void Program::checkAgainstFacts() {
-	
-	for each (Fact *fact in _facts) {			// For every fact
-		for each (Rule *rule in _rules) {		// We check against the rules
-			int count = 0;
-			bool contained = false;
-			for each (std::string s in fact->getProperty()) {		// We read every property of the fact
-				for each (std::string t in rule->getPreReq()) {		// And check against the antedcendents of the rules
-					if (s.compare(t) == 0)							// If the fact and antecedent increment counter
-						count++;
 
-					if (s.compare(rule->getResult()) == 0)			// If the fact has a rule result that are the same flag that it already has it
-						bool contained = true;
-				}
-				if (count == rule->getPreReq().size() && !contained) {	// Check if the fact meets the requirements for the rule and doesn't alreay contain it
-					fact->addProperty(rule->getResult());				// add rule result to the properties
-					_evaluatedFacts.emplace_back(new Fact(fact->getFactID(), rule->getResult())); // place a new fact for print out sake to show what was evalutated
-					count = 0;											// reset counter
-				}
+	for each (Rule *rule in _rules) {		// For every rule
+		int count = 0;
+		bool contained = false;
+		for each (std::string t in rule->getPreReq()) {	// And every antecedent
+
+			
+			for each (Fact *fact in _facts) { // For every fact we check the strings
+				if (fact->getFactID().compare(t) == 0)							// If the fact and antecedent equal increment counter
+					count++;
+
+				if (fact->getFactID().compare(rule->getResult()) == 0)			// If the fact has a rule result that are the same flag that it already has it
+					bool contained = true;
+			}
+			if (count == rule->getPreReq().size() && !contained) {	// Check if the fact meets the requirements for the rule and doesn't alreay contain it
+				_evaluatedFacts.emplace_back(new Fact(rule->getResult())); // place a new fact for print out sake to show what was evalutated
+				_facts.emplace_back(new Fact(rule->getResult()));
+				count = 0;											// reset counter
 			}
 		}
 	}

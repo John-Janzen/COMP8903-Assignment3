@@ -1,22 +1,7 @@
-gives_milk(animal)
-chews_cud(animal)
-long_legs(animal)
-long_neck(animal)
-tawny_color(animal)
-dark_spots(animal)
-hair(X) > mammal(X)
-gives_milk(X) > mammal(X)
-has_feathers(X) > bird(X)
-flies(X), lays_egg(X) > bird(X)
-mammal(X), eats_meat(X) > carnivore(X)
-mammal(X), pointed_teeth(X), claws(X), eyes_forward(X) > carnivore(X)
-mammal(X), hoofs(X) > ungulate(X)
-mammal(X), chews_cud(X) > ungulate(X)
-mammal(X), chews_cud(X) > even_toed(X)
-carnivore(X), tawny_color(X), dark_spots(X) > cheetah(X)
-carnivore(X), tawny_color(X), black_strips(X) > tiger(X)
-ungulate(X), long_legs(X), long_neck(X), tawny_color(X), dark_spots(X) > giraffe(X)
-bird(X), no_flies(X), long_legs(X), long_neck(X), black(X), white(X) > ostrich(X)
-bird(X), no_flies(X), swims(X), black(X), white(X) > penguin(X)
-bird(X), good_flies(X) > albatross(X)
-has_feathers(animal2)
+p
+q
+p, q > r
+p > s
+r > w
+s, q, r > w
+t > e
